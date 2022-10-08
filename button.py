@@ -7,7 +7,7 @@ def start(m, res=False):
     bot.send_message(m.chat.id, 'Привет, как тебя зовут?')
 # Получение сообщений от юзера
     bot.message_handler(content_types=["text"])
-    bot.send_message(message.chat.id, 'Очень рад знакомству, ' + message.text)
+    bot.send_message(m.chat.id, 'Очень рад знакомству, ' + m.text)
     bot.message_handler(commands=['button'])
 
 @bot.message_handler(commands=['button'])
