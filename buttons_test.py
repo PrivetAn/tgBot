@@ -1,16 +1,25 @@
+import time
 import telebot
-from telebot import types
-bot = telebot.TeleBot('5681988120:AAGILSBUeQ1vR5g_OAh_sUQ9yBcyo30PfCE')
+import config
 
+bot = telebot.TeleBot(config.token)
 @bot.message_handler(commands=['start'])
-def start_message(message):
-    keyboard = telebot.types.ReplyKeyboardMarkup(True)
-    keyboard.row('Создать', 'Посмотреть')
-    bot.send_message(message.chat.id, 'Привет! Выбери действие:', reply_markup=keyboard)
+def start(message):
+    bot.send_message(message.chat.id, "Привет")
 
 @bot.message_handler(content_types=['text'])
-def repeat_all_messages(message): # Название функции не играет никакой роли
-    bot.send_message(message.chat.id, message.text)
+def getUserText(message):
+    bot.send_message(message.from_user.id, message.text)
+
+# @bot.message_handler(content_types=['text'])
+# def get_text_messages(message):
+#     print(message)
+#     if message.text == "Привет":
+#         bot.send_message(message.from_user.id, "Привет, чем я могу тебе помочь?")
+#     elif message.text == "/help":
+#         bot.send_message(message.from_user.id, "Напиши привет")
+#     else:
+#         bot.send_message(message.from_user.id, "Я тебя не понимаю. Напиши /help.")
 
 # Запускаем бота
 while True:
