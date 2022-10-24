@@ -13,6 +13,7 @@ answers = []
 
 @bot.message_handler(commands=['start'])
 def start(message):
+    answers.clear()
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
     btn1 = types.KeyboardButton('Тест о животных')
     btn2 = types.KeyboardButton('Тест на эрудицию')
@@ -30,15 +31,11 @@ def getUserText(message):
         test = resources.tests.test.animalTest
         questions = list(resources.tests.test.animalTest.keys())
         keys = list(resources.tests.test.animalTest_keys.values())
-        # doAnimalTest(message, 0)
-        doTest(message, 0)
     elif get_message_bot == "тест на эрудицию":
         test = resources.tests.test.ingenuityTest
         questions = list(resources.tests.test.ingenuityTest.keys())
         keys = list(resources.tests.test.ingenuityTest_keys.values())
-        # doIngenuityTest(message, 0)
-        doTest(message, 0)
-
+    doTest(message, 0)
 
 def doTest(message, indexQuestion) :
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=3)
@@ -52,36 +49,6 @@ def doTest(message, indexQuestion) :
         bot.register_next_step_handler(msg, calculateTestResult)
     else : bot.register_next_step_handler(msg, doTest, indexQuestion)
 
-def doAnimalTest(message, indexQuestion) :
-    print("doAnimalTest")
-    print(questions[ indexQuestion ])
-    print(resources.tests.test.animalTest[ questions[ indexQuestion ] ])
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=3)
-    markup.add(types.KeyboardButton(resources.tests.test.animalTest[ questions[ indexQuestion ] ][ 0 ]),
-               types.KeyboardButton(resources.tests.test.animalTest[ questions[ indexQuestion ] ][ 1 ]),
-               types.KeyboardButton(resources.tests.test.animalTest[ questions[ indexQuestion ] ][ 2 ]))
-    msg = bot.send_message(message.chat.id, questions[ indexQuestion ], reply_markup=markup)
-    if (indexQuestion != 0): answers.append(message.text.strip().lower())
-    indexQuestion = indexQuestion + 1
-    if indexQuestion == len(questions) :
-        bot.register_next_step_handler(msg, calculateTestResult)
-    else : bot.register_next_step_handler(msg, doAnimalTest, indexQuestion)
-
-def doIngenuityTest(message, indexQuestion) :
-    print("doAnimalTest")
-    print(questions[ indexQuestion ])
-    print(resources.tests.test.animalTest[ questions[ indexQuestion ] ])
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=3)
-    markup.add(types.KeyboardButton(resources.tests.test.ingenuityTest[ questions[ indexQuestion ] ][ 0 ]),
-               types.KeyboardButton(resources.tests.test.ingenuityTest[ questions[ indexQuestion ] ][ 1 ]),
-               types.KeyboardButton(resources.tests.test.ingenuityTest[ questions[ indexQuestion ] ][ 2 ]))
-    msg = bot.send_message(message.chat.id, questions[ indexQuestion ], reply_markup=markup)
-    if(indexQuestion != 0) : answers.append(message.text.strip().lower())
-    indexQuestion = indexQuestion + 1
-    if indexQuestion == len(questions) :
-        bot.register_next_step_handler(msg, calculateTestResult)
-    else : bot.register_next_step_handler(msg, doIngenuityTest, indexQuestion)
-
 def calculateTestResult(message) :
     answers.append(message.text.strip().lower())
     print("answers = ", answers)
@@ -92,10 +59,9 @@ def calculateTestResult(message) :
     print("score =", score)
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
     markup.add(types.KeyboardButton('Начать сначала'))
-    msg = bot.send_message(message.chat.id, "Колличество ваших баллов = " + str(score), reply_markup=markup)
+    msg = bot.send_message(message.chat.id, "Колличество ваших баллов = " + str(score) + " из " + str(len(answers)) +
+                           "\nЭто составляет " + str(round(score / len(answers) * 100, 2)) + "%", reply_markup=markup)
     bot.register_next_step_handler(msg, start)
-
-
 
 # Запускаем бота
 while True:
