@@ -6,7 +6,9 @@ import resources.tests.test
 
 bot = telebot.TeleBot(config.token)
 
+test = {}
 questions = []
+keys = []
 answers = []
 
 @bot.message_handler(commands=['start'])
@@ -21,14 +23,34 @@ def start(message):
 @bot.message_handler(content_types=['text'])
 def getUserText(message):
     get_message_bot = message.text.strip().lower()
+    global test
+    global keys
     global questions
     if get_message_bot == "тест о животных":
+        test = resources.tests.test.animalTest
         questions = list(resources.tests.test.animalTest.keys())
-        doAnimalTest(message, 0)
+        keys = list(resources.tests.test.animalTest_keys.values())
+        # doAnimalTest(message, 0)
+        doTest(message, 0)
     elif get_message_bot == "тест на эрудицию":
-        # global questions
+        test = resources.tests.test.ingenuityTest
         questions = list(resources.tests.test.ingenuityTest.keys())
-        doIngenuityTest(message, 0)
+        keys = list(resources.tests.test.ingenuityTest_keys.values())
+        # doIngenuityTest(message, 0)
+        doTest(message, 0)
+
+
+def doTest(message, indexQuestion) :
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=3)
+    markup.add(types.KeyboardButton(test[ questions[ indexQuestion ] ][ 0 ]),
+               types.KeyboardButton(test[ questions[ indexQuestion ] ][ 1 ]),
+               types.KeyboardButton(test[ questions[ indexQuestion ] ][ 2 ]))
+    msg = bot.send_message(message.chat.id, questions[ indexQuestion ], reply_markup=markup)
+    if (indexQuestion != 0): answers.append(message.text.strip().lower())
+    indexQuestion = indexQuestion + 1
+    if indexQuestion == len(questions) :
+        bot.register_next_step_handler(msg, calculateTestResult)
+    else : bot.register_next_step_handler(msg, doTest, indexQuestion)
 
 def doAnimalTest(message, indexQuestion) :
     print("doAnimalTest")
@@ -61,9 +83,19 @@ def doIngenuityTest(message, indexQuestion) :
     else : bot.register_next_step_handler(msg, doIngenuityTest, indexQuestion)
 
 def calculateTestResult(message) :
-    print("calculateTestResult")
     answers.append(message.text.strip().lower())
-    print(answers)
+    print("answers = ", answers)
+    print("keys = ", keys)
+    score = 0
+    for i in range(len(answers)) :
+        if answers[ i ].lower() == keys[ i ].lower() : score += 1
+    print("score =", score)
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+    markup.add(types.KeyboardButton('Начать сначала'))
+    msg = bot.send_message(message.chat.id, "Колличество ваших баллов = " + str(score), reply_markup=markup)
+    bot.register_next_step_handler(msg, start)
+
+
 
 # Запускаем бота
 while True:
