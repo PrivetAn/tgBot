@@ -2,7 +2,7 @@ import task
 
 animalTestNew = task.Test([task.Question("По своему типу питания медведи ...",
                                         ['всеядны', 'мясоеды', 'травоядны'], 0,
-                                         "",
+                                         "bear.jpg",
                                          "HMC144_HittiteMicrowaveCorporation.pdf"),
                             task.Question("Кто такие гоминиды?",
                                          ['пресмыкающееся', 'приматы', 'паукообразные'], 1),

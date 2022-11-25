@@ -43,14 +43,14 @@ def doTest(message, indexQuestion):
     if (indexQuestion != 0):
         currentTest.questions[indexQuestion - 1].usersAnswer = message.text.strip().lower()
 
-    if currentTest.questions[indexQuestion].imagePath:
+    if currentTest.questions[indexQuestion].imagePath and not currentTest.questions[indexQuestion].filePath:
         msg = bot.send_photo(message.chat.id,
                              open(str(pathlib.Path.cwd()) +
                                 "\\resources\\images\\" +
                                 currentTest.questions[indexQuestion].imagePath, 'rb'),
                              currentTest.questions[indexQuestion].textQuestion,
                              reply_markup=markup)
-    elif currentTest.questions[indexQuestion].filePath:
+    elif currentTest.questions[indexQuestion].filePath and not currentTest.questions[indexQuestion].imagePath:
         msg = bot.send_document(message.chat.id,
                                  open(str(pathlib.Path.cwd()) +
                                     "\\resources\\additionalFiles\\" +
@@ -58,6 +58,17 @@ def doTest(message, indexQuestion):
                                  None,
                                  currentTest.questions[indexQuestion].textQuestion,
                                  reply_markup=markup)
+    # elif currentTest.questions[indexQuestion].filePath and currentTest.questions[indexQuestion].imagePath:
+    #     print("Photo and Doc")
+    #     img = open(str(pathlib.Path.cwd()) +
+    #                "\\resources\\images\\" +
+    #                currentTest.questions[indexQuestion].imagePath, 'rb')
+    #     doc = open(str(pathlib.Path.cwd()) +
+    #                "\\resources\\additionalFiles\\" +
+    #                currentTest.questions[indexQuestion].filePath, 'rb')
+    #     media = types.Union[types.InputMediaPhoto(img),
+    #                         types.InputMediaDocument(doc)]
+    #     msg = bot.send_media_group(message.chat.id, media)
     else:
         msg = bot.send_message(message.chat.id,
                                currentTest.questions[indexQuestion].textQuestion,
