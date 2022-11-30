@@ -1,5 +1,6 @@
 import sqlite3
 import pathlib
+import task
 
 
 def readTestFromDB(testName):
@@ -15,7 +16,12 @@ def readTestFromDB(testName):
 
     records = cursor.fetchall()
     print("Всего строк:  ", len(records))
+    print("Строки:  ", records)
+
+    test = task.Test()
+    for question in records :
+        print(question)
+
 
 
 readTestFromDB("Animals")
-readTestFromDB("IngenuityTest")

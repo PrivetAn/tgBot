@@ -5,7 +5,6 @@ import task
 from telebot import types
 import resources.tests.test
 import pathlib
-import sqlite3
 
 bot = telebot.TeleBot(config.token)
 
@@ -59,17 +58,6 @@ def doTest(message, indexQuestion):
                                  None,
                                  currentTest.questions[indexQuestion].textQuestion,
                                  reply_markup=markup)
-    # elif currentTest.questions[indexQuestion].filePath and currentTest.questions[indexQuestion].imagePath:
-    #     print("Photo and Doc")
-    #     img = open(str(pathlib.Path.cwd()) +
-    #                "\\resources\\images\\" +
-    #                currentTest.questions[indexQuestion].imagePath, 'rb')
-    #     doc = open(str(pathlib.Path.cwd()) +
-    #                "\\resources\\additionalFiles\\" +
-    #                currentTest.questions[indexQuestion].filePath, 'rb')
-    #     media = types.Union[types.InputMediaPhoto(img),
-    #                         types.InputMediaDocument(doc)]
-    #     msg = bot.send_media_group(message.chat.id, media)
     else:
         msg = bot.send_message(message.chat.id,
                                currentTest.questions[indexQuestion].textQuestion,
@@ -81,19 +69,6 @@ def doTest(message, indexQuestion):
     else:
         bot.register_next_step_handler(msg, doTest, indexQuestion)
 
-
-def printFile(message, indexQuestion, markup):
-    print("PRINTFILE")
-    msg = bot.send_document(message.chat.id,
-                           open(str(pathlib.Path.cwd()) +
-                                "\\resources\\additionalFiles\\" +
-                                currentTest.questions[indexQuestion].filePath, 'rb'),
-                           reply_markup=markup)
-    indexQuestion = indexQuestion + 1
-    if indexQuestion == len(currentTest.questions):
-        bot.register_next_step_handler(msg, printResult)
-    else:
-        bot.register_next_step_handler(msg, doTest, indexQuestion)
 
 def printResult(message):
     currentTest.questions[-1].usersAnswer = message.text.strip().lower()
