@@ -5,6 +5,7 @@ import task
 from telebot import types
 import resources.tests.test
 import pathlib
+import dbEngine
 
 bot = telebot.TeleBot(config.token)
 
@@ -26,9 +27,11 @@ def getUserText(message):
     get_message_bot = message.text.strip().lower()
     global currentTest
     if get_message_bot == "тест о животных":
-        currentTest = resources.tests.test.animalTestNew
+        currentTest = dbEngine.readTestFromDB("Animals")
+        print(currentTest.questions[0].textQuestion)
     elif get_message_bot == "тест на эрудицию":
-        currentTest = resources.tests.test.ingenuityTestNew
+        currentTest = dbEngine.readTestFromDB("IngenuityTest")
+        print(currentTest.questions[0].textQuestion)
     doTest(message, 0)
 
 
@@ -38,6 +41,9 @@ def doTest(message, indexQuestion):
     markup.add(types.KeyboardButton(currentTest.questions[indexQuestion].answers[0]),
                types.KeyboardButton(currentTest.questions[indexQuestion].answers[1]),
                types.KeyboardButton(currentTest.questions[indexQuestion].answers[2]))
+    print(currentTest.questions[indexQuestion].answers[0])
+    print(currentTest.questions[indexQuestion].answers[1])
+    print(currentTest.questions[indexQuestion].answers[2])
     msg = None
 
     if (indexQuestion != 0):

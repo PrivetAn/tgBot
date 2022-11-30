@@ -9,19 +9,17 @@ def readTestFromDB(testName):
     cursor = connect.cursor()
     print("Подключен к SQLite")
 
-    paramstyle = sqlite3.paramstyle
-    print("paramstyle = ", paramstyle)
-
     cursor.execute("SELECT * from questions WHERE name= ?", (testName,))
-
     records = cursor.fetchall()
-    print("Всего строк:  ", len(records))
-    print("Строки:  ", records)
 
-    test = task.Test()
-    for question in records :
-        print(question)
+    generatedTest = task.Test()
+    generatedTest.clearQuestions()
+    for tableQuestion in records :
+        generatedTest.appendQuestion(task.Question(tableQuestion[ 2 ],
+                                          tableQuestion[ 3 ].split(';'),
+                                          tableQuestion[ 4 ],
+                                          tableQuestion[ 5 ],
+                                          tableQuestion[ 6 ]))
+    return generatedTest
 
-
-
-readTestFromDB("Animals")
+# readTestFromDB("Animals")
