@@ -5,6 +5,7 @@ import task
 from telebot import types
 import resources.tests.test
 import pathlib
+import sqlite3
 
 bot = telebot.TeleBot(config.token)
 
