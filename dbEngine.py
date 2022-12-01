@@ -9,18 +9,18 @@ def readTestFromDB(testName):
     cursor = connect.cursor()
     print("Подключен к SQLite")
 
-    cursor.execute("SELECT * from questions WHERE name= ?", (testName,))
+    cursor.execute("SELECT * from questions WHERE variant= ?", (testName,))
     records = cursor.fetchall()
     print("records = ", records)
 
     generatedTest = task.Test()
     generatedTest.clearQuestions()
     for tableQuestion in records :
-        generatedTest.appendQuestion(task.Question(tableQuestion[ 2 ],
-                                          tableQuestion[ 3 ].split(';') if tableQuestion[ 3 ]  else "",
-                                          tableQuestion[ 4 ],
+        generatedTest.appendQuestion(task.Question(tableQuestion[ 3 ],
+                                          tableQuestion[ 4 ].split(';') if tableQuestion[ 3 ]  else "",
                                           tableQuestion[ 5 ],
-                                          tableQuestion[ 6 ]))
+                                          tableQuestion[ 6 ],
+                                          tableQuestion[ 7 ]))
 
     return generatedTest
 
