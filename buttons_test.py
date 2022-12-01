@@ -1,24 +1,23 @@
 import time
 import telebot
 import config
-import task
 from telebot import types
-import resources.tests.test
 import pathlib
 import dbEngine
+import task
 
 bot = telebot.TeleBot(config.token)
-
 currentTest = task.Test()
-
 
 @bot.message_handler(commands=['start'])
 def start(message):
+    dbEngine.addUserToDB(message.from_user.id, message.from_user.username)
+
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
     btn1 = types.KeyboardButton('Тест о животных')
     btn2 = types.KeyboardButton('Тест на эрудицию')
     markup.add(btn1, btn2)
-    send_mess = f"<b>Привет {message.from_user.first_name}</b>!\nВыберай тест и нажимай кнопку!"
+    send_mess = f"<b>Привет {message.from_user.first_name}</b>!\nВыбирай тест и нажимай кнопку!"
     bot.send_message(message.chat.id, send_mess, parse_mode='html', reply_markup=markup)
 
 
@@ -28,23 +27,19 @@ def getUserText(message):
     global currentTest
     if get_message_bot == "тест о животных":
         currentTest = dbEngine.readTestFromDB("Animals")
-        print(currentTest.questions[0].textQuestion)
     elif get_message_bot == "тест на эрудицию":
         currentTest = dbEngine.readTestFromDB("IngenuityTest")
-        print(currentTest.questions[0].textQuestion)
     doTest(message, 0)
 
 
 def doTest(message, indexQuestion):
-    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=3)
-
-    markup.add(types.KeyboardButton(currentTest.questions[indexQuestion].answers[0]),
-               types.KeyboardButton(currentTest.questions[indexQuestion].answers[1]),
-               types.KeyboardButton(currentTest.questions[indexQuestion].answers[2]))
-    print(currentTest.questions[indexQuestion].answers[0])
-    print(currentTest.questions[indexQuestion].answers[1])
-    print(currentTest.questions[indexQuestion].answers[2])
-    msg = None
+    markup = None
+    if currentTest.questions[indexQuestion].answers :
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True,
+                                           row_width=len(currentTest.questions[indexQuestion].answers))
+        markup.add(types.KeyboardButton(currentTest.questions[indexQuestion].answers[0]),
+                   types.KeyboardButton(currentTest.questions[indexQuestion].answers[1]),
+                   types.KeyboardButton(currentTest.questions[indexQuestion].answers[2]))
 
     if (indexQuestion != 0):
         currentTest.questions[indexQuestion - 1].usersAnswer = message.text.strip().lower()
