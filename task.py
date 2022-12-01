@@ -1,16 +1,18 @@
 class Question:
-    def __init__(self, textQuestion = "", answers = [], key = "", imagePath = "", filePath = ""):
+    def __init__(self, type = -1,  textQuestion = "", answers = [],key = "", imagePath = "", filePath = ""):
         if(imagePath == None) : imagePath = ""
         if(filePath == None) : filePath = ""
 
         self.textQuestion = textQuestion
         self.answers = answers
+        self.type = type
         self.key = key
         self.imagePath = imagePath
         self.filePath = filePath
 
     textQuestion = ""
     answers = []
+    type = -1
     key = ""
     usersAnswer = ""
     imagePath = ""

@@ -69,7 +69,7 @@ def selectTrainTask(message):
 def generateTest(message):
     print("generateTest ", message.text)
     global currentTest
-    currentTest = dbEngine.readTestFromDB("IngenuityTest_1")
+    currentTest = dbEngine.readTestFromDB("variant_1")
     doTest(message, 0)
 
 def doTest(message, indexQuestion):

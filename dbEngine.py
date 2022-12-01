@@ -16,8 +16,9 @@ def readTestFromDB(testName):
     generatedTest = task.Test()
     generatedTest.clearQuestions()
     for tableQuestion in records :
-        generatedTest.appendQuestion(task.Question(tableQuestion[ 3 ],
-                                          tableQuestion[ 4 ].split(';') if tableQuestion[ 3 ]  else "",
+        generatedTest.appendQuestion(task.Question( tableQuestion[ 2 ] if tableQuestion[ 2 ] else -1,
+                                          tableQuestion[ 3 ],
+                                          tableQuestion[ 4 ].split(';') if tableQuestion[ 4 ]  else "",
                                           tableQuestion[ 5 ],
                                           tableQuestion[ 6 ],
                                           tableQuestion[ 7 ]))
@@ -37,5 +38,5 @@ def addUserToDB(user_id = -1, user_name = ""):
     connect.commit()
     print("Пользователь добавлен")
 
-# readTestFromDB("Animals")
+# readTestFromDB("variant_1")
 # addUserToDB(12321414,"test")
