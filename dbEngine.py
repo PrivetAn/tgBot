@@ -38,4 +38,4 @@ def addUserToDB(user_id = -1, user_name = ""):
     print("Пользователь добавлен")
 
 # readTestFromDB("Animals")
-addUserToDB(12321414,"test")
+# addUserToDB(12321414,"test")
