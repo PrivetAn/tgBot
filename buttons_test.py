@@ -9,68 +9,68 @@ import task
 bot = telebot.TeleBot(config.token)
 currentTest = task.Test()
 
+# @bot.message_handler(commands=['start'])
+# def start(message):
+#     dbEngine.addUserToDB(message.from_user.id, message.from_user.username)
+#
+#     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+#     btn1 = types.KeyboardButton('Тест о животных')
+#     btn2 = types.KeyboardButton('Тест на эрудицию')
+#     markup.add(btn1, btn2)
+#     send_mess = f"<b>Привет {message.from_user.first_name}</b>!\nВыбирай тест и нажимай кнопку!"
+#     bot.send_message(message.chat.id, send_mess, parse_mode='html', reply_markup=markup)
+#
+# @bot.message_handler(content_types=['text'])
+# def getUserText(message):
+#     get_message_bot = message.text.strip().lower()
+#     global currentTest
+#     if get_message_bot == "тест о животных":
+#         currentTest = dbEngine.readTestFromDB("Animals_1")
+#     elif get_message_bot == "тест на эрудицию":
+#         currentTest = dbEngine.readTestFromDB("IngenuityTest_1")
+#     doTest(message, 0)
+
 @bot.message_handler(commands=['start'])
 def start(message):
     dbEngine.addUserToDB(message.from_user.id, message.from_user.username)
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    btn1 = types.KeyboardButton('Тест о животных')
-    btn2 = types.KeyboardButton('Тест на эрудицию')
+    btn1 = types.KeyboardButton('Пройти тестирование')
+    btn2 = types.KeyboardButton('Тренироваться')
     markup.add(btn1, btn2)
-    send_mess = f"<b>Привет {message.from_user.first_name}</b>!\nВыбирай тест и нажимай кнопку!"
+    send_mess = f"<b>Привет {message.from_user.first_name}</b>!\nВыбирай и нажимай кнопку!"
     bot.send_message(message.chat.id, send_mess, parse_mode='html', reply_markup=markup)
 
 @bot.message_handler(content_types=['text'])
 def getUserText(message):
     get_message_bot = message.text.strip().lower()
     global currentTest
-    if get_message_bot == "тест о животных":
-        currentTest = dbEngine.readTestFromDB("Animals_1")
-    elif get_message_bot == "тест на эрудицию":
-        currentTest = dbEngine.readTestFromDB("IngenuityTest_1")
+    if get_message_bot == "пройти тестирование":
+        generateTest(message)
+    elif get_message_bot == "тренироваться":
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=5)
+        markup.add(types.KeyboardButton('1'), types.KeyboardButton('2'), types.KeyboardButton('3'),
+                   types.KeyboardButton('4'), types.KeyboardButton('5'), types.KeyboardButton('6'),
+                   types.KeyboardButton('7'), types.KeyboardButton('8'), types.KeyboardButton('9'),
+                   types.KeyboardButton('10'), types.KeyboardButton('11'), types.KeyboardButton('12'),
+                   types.KeyboardButton('13'), types.KeyboardButton('14'), types.KeyboardButton('15'),
+                   types.KeyboardButton('16'), types.KeyboardButton('17'), types.KeyboardButton('18'),
+                   types.KeyboardButton('19'), types.KeyboardButton('20'), types.KeyboardButton('21'),
+                   types.KeyboardButton('22'), types.KeyboardButton('23'), types.KeyboardButton('24'),
+                   types.KeyboardButton('25'), types.KeyboardButton('26'), types.KeyboardButton('27'))
+        msg = bot.send_message(message.chat.id,
+                               "Выберите типовое задание:",
+                               reply_markup=markup)
+        bot.register_next_step_handler(msg, selectTrainTask)
+
+def selectTrainTask(message):
+    print(message.text)
+
+def generateTest(message):
+    print(message.text)
+    global currentTest
+    currentTest = dbEngine.readTestFromDB("IngenuityTest_1")
     doTest(message, 0)
-
-# @bot.message_handler(commands=['start'])
-# def start(message):
-#     dbEngine.addUserToDB(message.from_user.id, message.from_user.username)
-#
-#     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-#     btn1 = types.KeyboardButton('Пройти тестирование')
-#     btn2 = types.KeyboardButton('Тренироваться')
-#     markup.add(btn1, btn2)
-#     send_mess = f"<b>Привет {message.from_user.first_name}</b>!\nВыбирай и нажимай кнопку!"
-#     bot.send_message(message.chat.id, send_mess, parse_mode='html', reply_markup=markup)
-
-# @bot.message_handler(content_types=['text'])
-# def getUserText(message):
-#     get_message_bot = message.text.strip().lower()
-#     global currentTest
-#     if get_message_bot == "пройти тестирование":
-#         generateTest(message)
-#     elif get_message_bot == "тренироваться":
-#         markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=5)
-#         markup.add(types.KeyboardButton('1'), types.KeyboardButton('2'), types.KeyboardButton('3'),
-#                    types.KeyboardButton('4'), types.KeyboardButton('5'), types.KeyboardButton('6'),
-#                    types.KeyboardButton('7'), types.KeyboardButton('8'), types.KeyboardButton('9'),
-#                    types.KeyboardButton('10'), types.KeyboardButton('11'), types.KeyboardButton('12'),
-#                    types.KeyboardButton('13'), types.KeyboardButton('14'), types.KeyboardButton('15'),
-#                    types.KeyboardButton('16'), types.KeyboardButton('17'), types.KeyboardButton('18'),
-#                    types.KeyboardButton('19'), types.KeyboardButton('20'), types.KeyboardButton('21'),
-#                    types.KeyboardButton('22'), types.KeyboardButton('23'), types.KeyboardButton('24'),
-#                    types.KeyboardButton('25'), types.KeyboardButton('26'), types.KeyboardButton('27'))
-#         msg = bot.send_message(message.chat.id,
-#                                "Выберите типовое задание:",
-#                                reply_markup=markup)
-#         bot.register_next_step_handler(msg, selectTrainTask)
-
-# def selectTrainTask(message):
-#     print(message.text)
-#
-# def generateTest(message):
-#     print(message.text)
-#     global currentTest
-#     currentTest = dbEngine.readTestFromDB("IngenuityTest_1")
-#     doTest(message, 0)
 
 def doTest(message, indexQuestion):
     markup = None
