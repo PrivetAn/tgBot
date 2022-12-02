@@ -85,64 +85,26 @@ def doTest(message, indexQuestion):
     if (indexQuestion != 0):
         currentTest.questions[indexQuestion - 1].usersAnswer = message.text.strip().lower()
 
-    textForSend = correctMessage(str("<b>Задание №" +
-                                     str(currentTest.questions[indexQuestion].type) + "</b>\n" +
-                                     currentTest.questions[indexQuestion].textQuestion))
-    print("textForSend = ", correctMessage(textForSend))
+    textForSend = str("<b>Задание №" +
+                      str(currentTest.questions[indexQuestion].type) + "</b>\n" +
+                      correctMessage(currentTest.questions[indexQuestion].textQuestion))
+
     if currentTest.questions[indexQuestion].imagePath and not currentTest.questions[indexQuestion].filePath:
-        # msg = bot.send_photo(message.chat.id,
-        #                      open(str(pathlib.Path.cwd()) +
-        #                           "\\resources\\images\\" +
-        #                           currentTest.questions[indexQuestion].imagePath, 'rb'),
-        #                      textForSend,
-        #                      parse_mode='html',
-        #                      reply_markup=markup)
         bot.send_photo(message.chat.id,
                        open(str(pathlib.Path.cwd()) +
                             "\\resources\\images\\" +
                             currentTest.questions[indexQuestion].imagePath, 'rb'))
-                       # textForSend,
-                       # parse_mode='html',
-                       # reply_markup=markup)
-        # msg = bot.send_message(message.chat.id,
-        #                        textForSend,
-        #                        parse_mode='html',
-        #                        reply_markup=markup)
     elif currentTest.questions[indexQuestion].filePath and not currentTest.questions[indexQuestion].imagePath:
         bot.send_document(message.chat.id,
                           open(str(pathlib.Path.cwd()) +
                                "\\resources\\additionalFiles\\" +
                                currentTest.questions[indexQuestion].filePath, 'rb'),
                                None)
-                                # textForSend,
-                                # parse_mode='html',
-                                # reply_markup=markup)
-        # msg = bot.send_message(message.chat.id,
-        #                        textForSend,
-        #                        parse_mode='html',
-        #                        reply_markup=markup)
-    # else:
-    #     msg = bot.send_message(message.chat.id,
-    #                            textForSend,
-    #                            parse_mode='html',
-    #                            reply_markup=markup)
-
     msg = bot.send_message(message.chat.id,
                            textForSend,
-                           # parse_mode='html',
+                           parse_mode='html',
                            reply_markup=markup)
     indexQuestion = indexQuestion + 1
-    if indexQuestion == len(currentTest.questions):
-        bot.register_next_step_handler(msg, printResult)
-    else:
-        bot.register_next_step_handler(msg, doTest, indexQuestion)
-
-def sendPhoto(message, indexQuestion, textMessage, markup):
-    print("sendPhoto textMessage = ", textMessage)
-    msg = bot.send_message(message.chat.id,
-                           textMessage,
-                           # parse_mode='html',
-                           reply_markup=markup)
     if indexQuestion == len(currentTest.questions):
         bot.register_next_step_handler(msg, printResult)
     else:
@@ -159,20 +121,17 @@ def printResult(message):
     bot.register_next_step_handler(msg, start)
 
 def correctMessage(text) -> str:
-    # text.replace(r'/_/gi', "\\_")
-    # text.replace(r'/-/gi', "\\-")
-    # text.replace(r"~", "\\~")
-    # text.replace(r'/`/gi', "\\`")
-    # text.replace(r'/\</g', "\\<")
-    # text.replace(r'/\>/g', "\\>")
-    # text.replace(r'/\≤/g', "\\≤")
+    print("text before correct = ", text)
+    text = text.replace("<", "&lt")
+    text = text.replace(">", "&gt")
+    print("text after correct = ", text)
 
-    re.sub(r'/_/gi', '\\_', text)
-    re.sub(r'/-/gi', '\\-', text)
-    re.sub(r'/`/gi', '\\`', text)
-    re.sub(r'/</g', '\\<', text)
-    re.sub(r'/>/g', '\\>', text)
-    re.sub(r'/≤/g', '\\≤', text)
+    # re.sub(r'/_/gi', '\\_', text)
+    # re.sub(r'/-/gi', '\\-', text)
+    # re.sub(r'/`/gi', '\\`', text)
+    # re.sub(r'/</g', '\\<', text)
+    # re.sub(r'/>/g', '\\>', text)
+    # re.sub(r'/≤/g', '\\≤', text)
     return text
 
 # Запускаем бота
