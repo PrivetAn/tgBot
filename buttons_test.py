@@ -5,7 +5,9 @@ from telebot import types
 import pathlib
 import dbEngine
 import task
-import re
+import numpy as np
+import matplotlib.pyplot as plt
+
 
 bot = telebot.TeleBot(config.token)
 currentTest = task.Test()
@@ -65,15 +67,21 @@ def getUserText(message):
                                reply_markup=markup)
         bot.register_next_step_handler(msg, selectTrainTask)
     elif get_message_bot == "статистика":
-        dbEngine.getUserResultFromDB(message.from_user.id)
+        resultValues = dbEngine.getUserResultFromDB(message.from_user.id)
+        print("results = ", resultValues)
+
+        #График сохраняется по указанному пути
+        path = 'plot_results.png'
+        getPlot(resultValues, path)
 
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
         btn1 = types.KeyboardButton('Пройти тестирование')
         btn2 = types.KeyboardButton('Тренироваться')
         btn3 = types.KeyboardButton('Статистика')
         markup.add(btn1, btn2, btn3)
-        send_mess = f"<b>Привет {message.from_user.first_name}</b>!\nВыбирай и нажимай кнопку!"
-        bot.send_message(message.chat.id, send_mess, parse_mode='html', reply_markup=markup)
+        bot.send_photo(message.chat.id, photo=open(path, 'rb'))
+        # send_mess = f"<b>Привет {message.from_user.first_name}</b>!\nВыбирай и нажимай кнопку!"
+        # bot.send_message(message.chat.id, send_mess, parse_mode='html', reply_markup=markup)
 def selectTrainTask(message):
     print(message.text)
 
@@ -133,6 +141,20 @@ def printResult(message):
                            str(result[0]) + " из " + str(len(currentTest.questions)) +
                            "\nЭто составляет " + str(result[1]) + "%", reply_markup=markup)
     bot.register_next_step_handler(msg, start)
+
+def getPlot(results, path):
+    #   Отрисовка графика
+    plt.figure(figsize=(12, 7))
+    #   Отрисовка точек
+    plt.scatter(results[0], results[1], lw=10)
+    plt.plot(results[0], results[1], lw=5)
+    plt.tick_params(axis='both', which='major', labelsize=16)
+    plt.xlabel('Дата', fontsize=20, fontweight="bold")
+    plt.ylabel('% решенных заданий', fontsize=20, fontweight="bold")
+    plt.title('Результаты', fontsize=25, fontweight="bold")
+    plt.grid(True)
+    # показываем график
+    plt.savefig(path, dpi=100)
 
 def correctMessage(text) -> str:
     print("text before correct = ", text)

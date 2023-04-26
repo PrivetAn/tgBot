@@ -56,11 +56,12 @@ def getUserResultFromDB(user_id=-1):
     cursor = connect.cursor()
     print("Подключен к SQLite")
 
-    results = []
+    results = [[],[]]
     cursor.execute("SELECT * from statistic WHERE user_id= ?", (user_id,))
     for entry in cursor.fetchall():
-        print("entry = ", entry)
-        results.append([entry[ 2 ], entry[ 3 ]])
+        results[ 0 ].append(entry[ 2 ].split()[ 0 ])
+        results[ 1 ].append(entry[ 3 ])
+    print("results = ", results)
     return results
 
 
