@@ -38,7 +38,8 @@ def start(message):
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
     btn1 = types.KeyboardButton('Пройти тестирование')
     btn2 = types.KeyboardButton('Тренироваться')
-    markup.add(btn1, btn2)
+    btn3 = types.KeyboardButton('Статистика')
+    markup.add(btn1, btn2, btn3)
     send_mess = f"<b>Привет {message.from_user.first_name}</b>!\nВыбирай и нажимай кнопку!"
     bot.send_message(message.chat.id, send_mess, parse_mode='html', reply_markup=markup)
 
@@ -63,7 +64,16 @@ def getUserText(message):
                                "Выберите типовое задание:",
                                reply_markup=markup)
         bot.register_next_step_handler(msg, selectTrainTask)
+    elif get_message_bot == "статистика":
+        dbEngine.getUserResultFromDB(message.from_user.id)
 
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+        btn1 = types.KeyboardButton('Пройти тестирование')
+        btn2 = types.KeyboardButton('Тренироваться')
+        btn3 = types.KeyboardButton('Статистика')
+        markup.add(btn1, btn2, btn3)
+        send_mess = f"<b>Привет {message.from_user.first_name}</b>!\nВыбирай и нажимай кнопку!"
+        bot.send_message(message.chat.id, send_mess, parse_mode='html', reply_markup=markup)
 def selectTrainTask(message):
     print(message.text)
 
@@ -113,6 +123,10 @@ def doTest(message, indexQuestion):
 def printResult(message):
     currentTest.questions[-1].usersAnswer = message.text.strip().lower()
     result = currentTest.calculateResultTest()
+
+#   Запись результата в БД
+    dbEngine.addUserResultToDB(message.from_user.id, result[1])
+
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
     markup.add(types.KeyboardButton('Начать сначала'))
     msg = bot.send_message(message.chat.id, "Колличество ваших баллов = " +
