@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 
 bot = telebot.TeleBot(config.token)
 currentTest = task.Test()
+training = False
 
 # @bot.message_handler(commands=['start'])
 # def start(message):
@@ -85,6 +86,8 @@ def getUserText(message):
 def selectTrainTask(message):
     print(message.text)
     global currentTest
+    global training
+    training = True
     currentTest = dbEngine.readTaskFromDB(message.text)
     doTest(message, 0)
 
@@ -127,7 +130,8 @@ def doTest(message, indexQuestion):
                            reply_markup=markup)
     indexQuestion = indexQuestion + 1
     if indexQuestion == len(currentTest.questions):
-        bot.register_next_step_handler(msg, printResult)
+        if(training) : bot.register_next_step_handler(msg, start)
+        else : bot.register_next_step_handler(msg, printResult)
     else:
         bot.register_next_step_handler(msg, doTest, indexQuestion)
 
