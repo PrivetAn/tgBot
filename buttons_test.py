@@ -84,6 +84,9 @@ def getUserText(message):
         # bot.send_message(message.chat.id, send_mess, parse_mode='html', reply_markup=markup)
 def selectTrainTask(message):
     print(message.text)
+    global currentTest
+    currentTest = dbEngine.readTaskFromDB(message.text)
+    doTest(message, 0)
 
 def generateTest(message):
     print("generateTest ", message.text)

@@ -25,6 +25,28 @@ def readTestFromDB(testName):
 
     return generatedTest
 
+def readTaskFromDB(taskNumber):
+    print("testName = ", taskNumber)
+    connect = sqlite3.connect(str(pathlib.Path.cwd()) + "\\resources\\db\\tests.db")
+    cursor = connect.cursor()
+    print("Подключен к SQLite")
+
+    cursor.execute("SELECT * from questions WHERE type_task= ?", (taskNumber,))
+    records = cursor.fetchall()
+    print("records = ", records)
+
+    generatedTest = task.Test()
+    generatedTest.clearQuestions()
+    for tableQuestion in records :
+        generatedTest.appendQuestion(task.Question(tableQuestion[ 2 ] if tableQuestion[ 2 ] else -1,
+                                                   tableQuestion[ 3 ].replace("\\n", "\n"),
+                                                   tableQuestion[ 4 ].split(';') if tableQuestion[ 4 ] else "",
+                                                   tableQuestion[ 5 ],
+                                                   tableQuestion[ 6 ],
+                                                   tableQuestion[ 7 ]))
+
+    return generatedTest
+
 def addUserToDB(user_id = -1, user_name = ""):
     connect = sqlite3.connect(str(pathlib.Path.cwd()) + "\\resources\\db\\tests.db")
     cursor = connect.cursor()
