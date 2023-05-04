@@ -5,6 +5,7 @@ from telebot import types
 import pathlib
 import dbEngine
 import task
+import theory
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -36,13 +37,15 @@ training = False
 
 @bot.message_handler(commands=['start'])
 def start(message):
+    print("START")
     dbEngine.addUserToDB(message.from_user.id, message.from_user.username)
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
     btn1 = types.KeyboardButton('Пройти тестирование')
     btn2 = types.KeyboardButton('Тренироваться')
     btn3 = types.KeyboardButton('Статистика')
-    markup.add(btn1, btn2, btn3)
+    btn4 = types.KeyboardButton('Теория')
+    markup.add(btn1, btn2, btn3, btn4)
     send_mess = f"<b>Привет {message.from_user.first_name}</b>!\nВыбирай и нажимай кнопку!"
     bot.send_message(message.chat.id, send_mess, parse_mode='html', reply_markup=markup)
 
@@ -83,6 +86,21 @@ def getUserText(message):
         bot.send_photo(message.chat.id, photo=open(path, 'rb'))
         # send_mess = f"<b>Привет {message.from_user.first_name}</b>!\nВыбирай и нажимай кнопку!"
         # bot.send_message(message.chat.id, send_mess, parse_mode='html', reply_markup=markup)
+    elif get_message_bot == "теория":
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=5)
+        markup.add(types.KeyboardButton('1'), types.KeyboardButton('2'), types.KeyboardButton('3'),
+                   types.KeyboardButton('4'), types.KeyboardButton('5'), types.KeyboardButton('6'),
+                   types.KeyboardButton('7'), types.KeyboardButton('8'), types.KeyboardButton('9'),
+                   types.KeyboardButton('10'), types.KeyboardButton('11'), types.KeyboardButton('12'),
+                   types.KeyboardButton('13'), types.KeyboardButton('14'), types.KeyboardButton('15'),
+                   types.KeyboardButton('16'), types.KeyboardButton('17'), types.KeyboardButton('18'),
+                   types.KeyboardButton('19'), types.KeyboardButton('20'), types.KeyboardButton('21'),
+                   types.KeyboardButton('22'), types.KeyboardButton('23'), types.KeyboardButton('24'),
+                   types.KeyboardButton('25'), types.KeyboardButton('26'), types.KeyboardButton('27'))
+        msg = bot.send_message(message.chat.id,
+                               "Выберите тип задания, по которому вы хотите изучить теорию:",
+                               reply_markup=markup)
+        bot.register_next_step_handler(msg, printTheory)
 def selectTrainTask(message):
     print(message.text)
     global currentTest
@@ -147,6 +165,51 @@ def printResult(message):
     msg = bot.send_message(message.chat.id, "Колличество ваших баллов = " +
                            str(result[0]) + " из " + str(len(currentTest.questions)) +
                            "\nЭто составляет " + str(result[1]) + "%", reply_markup=markup)
+    bot.register_next_step_handler(msg, start)
+
+def printTheory(message):
+    print(message.text)
+
+    theory = dbEngine.readTheoryFromDB(message.text)
+
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+    btn1 = types.KeyboardButton('В начало')
+    markup.add(btn1)
+
+    textForSend = str("<b>Задание №" +
+                      str(theory.type) + "</b>\n" +
+                      correctMessage(theory.textTheory))
+
+    print("textForSend = ", textForSend)
+
+    if theory.imagePath and not theory.filePath:
+        print("theory.imagePath = ", theory.imagePath)
+        bot.send_photo(message.chat.id,
+                       open(str(pathlib.Path.cwd()) +
+                            "\\resources\\images\\" +
+                            theory.imagePath, 'rb'))
+    elif theory.filePath and not theory.imagePath:
+        print("theory.filePath = ", theory.filePath)
+        bot.send_document(message.chat.id,
+                          open(str(pathlib.Path.cwd()) +
+                               "\\resources\\additionalFiles\\" +
+                               theory.filePath, 'rb'),
+                               None)
+    elif theory.filePath and theory.imagePath:
+        bot.send_photo(message.chat.id,
+                       open(str(pathlib.Path.cwd()) +
+                            "\\resources\\images\\" +
+                            theory.imagePath, 'rb'))
+        bot.send_document(message.chat.id,
+                          open(str(pathlib.Path.cwd()) +
+                               "\\resources\\additionalFiles\\" +
+                               theory.filePath, 'rb'),
+                               None)
+    msg = bot.send_message(message.chat.id,
+                           textForSend,
+                           parse_mode='html',
+                           reply_markup=markup)
+
     bot.register_next_step_handler(msg, start)
 
 def getPlot(results, path):
