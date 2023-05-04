@@ -5,35 +5,11 @@ from telebot import types
 import pathlib
 import dbEngine
 import task
-import theory
-import numpy as np
 import matplotlib.pyplot as plt
-
 
 bot = telebot.TeleBot(config.token)
 currentTest = task.Test()
 training = False
-
-# @bot.message_handler(commands=['start'])
-# def start(message):
-#     dbEngine.addUserToDB(message.from_user.id, message.from_user.username)
-#
-#     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-#     btn1 = types.KeyboardButton('Тест о животных')
-#     btn2 = types.KeyboardButton('Тест на эрудицию')
-#     markup.add(btn1, btn2)
-#     send_mess = f"<b>Привет {message.from_user.first_name}</b>!\nВыбирай тест и нажимай кнопку!"
-#     bot.send_message(message.chat.id, send_mess, parse_mode='html', reply_markup=markup)
-#
-# @bot.message_handler(content_types=['text'])
-# def getUserText(message):
-#     get_message_bot = message.text.strip().lower()
-#     global currentTest
-#     if get_message_bot == "тест о животных":
-#         currentTest = dbEngine.readTestFromDB("Animals_1")
-#     elif get_message_bot == "тест на эрудицию":
-#         currentTest = dbEngine.readTestFromDB("IngenuityTest_1")
-#     doTest(message, 0)
 
 @bot.message_handler(commands=['start'])
 def start(message):
@@ -173,8 +149,7 @@ def printTheory(message):
     theory = dbEngine.readTheoryFromDB(message.text)
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
-    btn1 = types.KeyboardButton('В начало')
-    markup.add(btn1)
+    markup.add(types.KeyboardButton('В начало'))
 
     textForSend = str("<b>Задание №" +
                       str(theory.type) + "</b>\n" +
