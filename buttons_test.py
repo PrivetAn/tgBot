@@ -150,7 +150,7 @@ def printResultTraining(message):
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
     markup.add(types.KeyboardButton('Начать сначала'))
-    msg = bot.send_message(message.chat.id, result, reply_markup=markup)
+    msg = bot.send_message(message.chat.id, result, reply_markup=markup, parse_mode='html')
     bot.register_next_step_handler(msg, start)
 
 def printTheory(message):
@@ -166,6 +166,9 @@ def printTheory(message):
                       correctMessage(theory.textTheory))
 
     print("textForSend = ", textForSend)
+
+    bot.send_message(message.chat.id, textForSend,
+                           parse_mode='html')
 
     if theory.imagePath and not theory.filePath:
         print("theory.imagePath = ", theory.imagePath)
@@ -191,7 +194,7 @@ def printTheory(message):
                                theory.filePath, 'rb'),
                                None)
     msg = bot.send_message(message.chat.id,
-                           textForSend,
+                           "Нажмите на кнопку, чтобы вернуться в начало.",
                            parse_mode='html',
                            reply_markup=markup)
 

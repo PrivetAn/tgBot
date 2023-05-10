@@ -42,8 +42,8 @@ class Test:
         userAnswers = ""
         for q in self.questions :
             print(q.usersAnswer)
-            userAnswers += str(number) + ") - "
-            userAnswers += "правильно" if q.usersAnswer.strip().lower() == q.key.strip().lower() else "не правильно"
+            userAnswers += str(number) + ") "
+            userAnswers += "<b>+</b>" if q.usersAnswer.strip().lower() == q.key.strip().lower() else "<b>—</b>"
             userAnswers += '\n'
             number += 1
 
