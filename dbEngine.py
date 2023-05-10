@@ -103,10 +103,3 @@ def getUserResultFromDB(user_id=-1):
         results[ 1 ].append(entry[ 3 ])
     print("results = ", results)
     return results
-
-
-
-
-
-# readTestFromDB("variant_1")
-# addUserToDB(12321414,"test")

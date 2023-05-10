@@ -36,6 +36,20 @@ class Test:
             if q.usersAnswer.strip().lower() == q.key.strip().lower(): score = score + 1
         return [score, round(score / len(self.questions) * 100, 2)]
 
+    def calculateResultTrainingTest(self) :
+        print("TEST::calculateResultTrainingTest")
+        number = 1
+        userAnswers = ""
+        for q in self.questions :
+            print(q.usersAnswer)
+            userAnswers += str(number) + ") - "
+            userAnswers += "правильно" if q.usersAnswer.strip().lower() == q.key.strip().lower() else "не правильно"
+            userAnswers += '\n'
+            number += 1
+
+        print("resultStr = ", userAnswers)
+        return userAnswers
+
     questions = []
 
 

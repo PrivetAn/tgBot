@@ -124,8 +124,9 @@ def doTest(message, indexQuestion):
                            reply_markup=markup)
     indexQuestion = indexQuestion + 1
     if indexQuestion == len(currentTest.questions):
-        if(training) : bot.register_next_step_handler(msg, start)
+        if(training) : bot.register_next_step_handler(msg, printResultTraining)
         else : bot.register_next_step_handler(msg, printResult)
+        # bot.register_next_step_handler(msg, printResult)
     else:
         bot.register_next_step_handler(msg, doTest, indexQuestion)
 
@@ -141,6 +142,15 @@ def printResult(message):
     msg = bot.send_message(message.chat.id, "Колличество ваших баллов = " +
                            str(result[0]) + " из " + str(len(currentTest.questions)) +
                            "\nЭто составляет " + str(result[1]) + "%", reply_markup=markup)
+    bot.register_next_step_handler(msg, start)
+
+def printResultTraining(message):
+    currentTest.questions[-1].usersAnswer = message.text.strip().lower()
+    result = currentTest.calculateResultTrainingTest()
+
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
+    markup.add(types.KeyboardButton('Начать сначала'))
+    msg = bot.send_message(message.chat.id, result, reply_markup=markup)
     bot.register_next_step_handler(msg, start)
 
 def printTheory(message):
