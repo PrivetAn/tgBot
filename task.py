@@ -28,7 +28,7 @@ class Test:
     def clearQuestions(self):
         self.questions.clear()
 
-    def calculateResultTest(self) :
+    def calculateResultScoreTest(self) :
         print("TEST::calculateResultTest")
         score = 0
         for q in self.questions :
@@ -36,7 +36,7 @@ class Test:
             if q.usersAnswer.strip().lower() == q.key.strip().lower(): score = score + 1
         return [score, round(score / len(self.questions) * 100, 2)]
 
-    def calculateResultTrainingTest(self) :
+    def getResultTestForEachTask(self) :
         print("TEST::calculateResultTrainingTest")
         number = 1
         userAnswers = ""

@@ -2,7 +2,8 @@
 # token = "6282641768:AAHkrmLiRe4VLjrNqRx4NQGuCEr0SyFRMmM"
 
 # Тест
-token = "6160541287:AAEXi-UlOnyMQzwGnj_1_A1pDmKDh798Kww"
+# token = "6160541287:AAEXi-UlOnyMQzwGnj_1_A1pDmKDh798Kww"
 
 # Релиз
-# token = "6060950672:AAEXzyBJ5AJPiUDI9md5ZWBdC_diUuTvfRM?"
+token = "6060950672:AAEXzyBJ5AJPiUDI9md5ZWBdC_diUuTvfRM"
+

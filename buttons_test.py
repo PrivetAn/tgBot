@@ -132,21 +132,24 @@ def doTest(message, indexQuestion):
 
 def printResult(message):
     currentTest.questions[-1].usersAnswer = message.text.strip().lower()
-    result = currentTest.calculateResultTest()
+    resultScore = currentTest.calculateResultScoreTest()
+
+    resultTest = currentTest.getResultTestForEachTask()
+    bot.send_message(message.chat.id, resultTest, parse_mode='html')
 
 #   Запись результата в БД
-    dbEngine.addUserResultToDB(message.from_user.id, result[1])
+    dbEngine.addUserResultToDB(message.from_user.id, resultScore[1])
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
     markup.add(types.KeyboardButton('Начать сначала'))
     msg = bot.send_message(message.chat.id, "Колличество ваших баллов = " +
-                           str(result[0]) + " из " + str(len(currentTest.questions)) +
-                           "\nЭто составляет " + str(result[1]) + "%", reply_markup=markup)
+                           str(resultScore[0]) + " из " + str(len(currentTest.questions)) +
+                           "\nЭто составляет " + str(resultScore[1]) + "%", reply_markup=markup)
     bot.register_next_step_handler(msg, start)
 
 def printResultTraining(message):
     currentTest.questions[-1].usersAnswer = message.text.strip().lower()
-    result = currentTest.calculateResultTrainingTest()
+    result = currentTest.getResultTestForEachTask()
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1)
     markup.add(types.KeyboardButton('Начать сначала'))
