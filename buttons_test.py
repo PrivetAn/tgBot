@@ -1,4 +1,3 @@
-import time
 import telebot
 import config
 from telebot import types
@@ -6,23 +5,36 @@ import pathlib
 import dbEngine
 import task
 import matplotlib.pyplot as plt
+import time
+from datetime import datetime
+import threading
 
 bot = telebot.TeleBot(config.token)
 currentTest = task.Test()
 training = False
+now = datetime.now()
+current_time = now.strftime("%H:%M")
+# notificationPeriod = 86400
+notificationPeriod = 10
 
 @bot.message_handler(commands=['start'])
 def start(message):
     print("START")
+
+    # Запуск механизма вывода уведомление
+    t = threading.Timer(notificationPeriod, sendNotification, [message.chat.id])
+    t.start()
+
+    # Добавление пользователя в БД
     dbEngine.addUserToDB(message.from_user.id, message.from_user.username)
 
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-    btn1 = types.KeyboardButton('Пройти тестирование')
+    btn1 = types.KeyboardButton('Изучить теорию')
     btn2 = types.KeyboardButton('Тренироваться')
-    btn3 = types.KeyboardButton('Статистика')
-    btn4 = types.KeyboardButton('Теория')
+    btn3 = types.KeyboardButton('Пройти тестирование')
+    btn4 = types.KeyboardButton('Посмотреть статистику')
     markup.add(btn1, btn2, btn3, btn4)
-    send_mess = f"<b>Привет {message.from_user.first_name}</b>!\nВыбирай и нажимай кнопку!"
+    send_mess = f"<b>Привет, {message.from_user.first_name}</b>!\nВыбирай и нажимай кнопку!"
     bot.send_message(message.chat.id, send_mess, parse_mode='html', reply_markup=markup)
 
 @bot.message_handler(content_types=['text'])
@@ -46,7 +58,7 @@ def getUserText(message):
                                "Выберите типовое задание:",
                                reply_markup=markup)
         bot.register_next_step_handler(msg, selectTrainTask)
-    elif get_message_bot == "статистика":
+    elif get_message_bot == "посмотреть статистику":
         resultValues = dbEngine.getUserResultFromDB(message.from_user.id)
         print("results = ", resultValues)
 
@@ -55,14 +67,15 @@ def getUserText(message):
         getPlot(resultValues, path)
 
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
-        btn1 = types.KeyboardButton('Пройти тестирование')
+        btn1 = types.KeyboardButton('Изучить теорию')
         btn2 = types.KeyboardButton('Тренироваться')
-        btn3 = types.KeyboardButton('Статистика')
-        markup.add(btn1, btn2, btn3)
+        btn3 = types.KeyboardButton('Пройти тестирование')
+        btn4 = types.KeyboardButton('Посмотреть статистику')
+        markup.add(btn1, btn2, btn3, btn4)
         bot.send_photo(message.chat.id, photo=open(path, 'rb'))
         # send_mess = f"<b>Привет {message.from_user.first_name}</b>!\nВыбирай и нажимай кнопку!"
         # bot.send_message(message.chat.id, send_mess, parse_mode='html', reply_markup=markup)
-    elif get_message_bot == "теория":
+    elif get_message_bot == "изучить теорию":
         markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=5)
         markup.add(types.KeyboardButton('1'), types.KeyboardButton('2'), types.KeyboardButton('3'),
                    types.KeyboardButton('4'), types.KeyboardButton('5'), types.KeyboardButton('6'),
@@ -75,6 +88,18 @@ def getUserText(message):
                    types.KeyboardButton('25'), types.KeyboardButton('26'), types.KeyboardButton('27'))
         msg = bot.send_message(message.chat.id,
                                "Выберите тип задания, по которому вы хотите изучить теорию:",
+                               reply_markup=markup)
+        bot.register_next_step_handler(msg, printTheory)
+    else:
+        markup = types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+        btn1 = types.KeyboardButton('Изучить теорию')
+        btn2 = types.KeyboardButton('Тренироваться')
+        btn3 = types.KeyboardButton('Пройти тестирование')
+        btn4 = types.KeyboardButton('Посмотреть статистику')
+        markup.add(btn1, btn2, btn3, btn4)
+        msg = bot.send_message(message.chat.id,
+                               "<b>Ошибка.</b>\nСкорее всего вы отправили неверную команду, используйте меню для навигации по боту.",
+                               parse_mode='html',
                                reply_markup=markup)
         bot.register_next_step_handler(msg, printTheory)
 def selectTrainTask(message):
@@ -230,6 +255,16 @@ def correctMessage(text) -> str:
     # re.sub(r'/>/g', '\\>', text)
     # re.sub(r'/≤/g', '\\≤', text)
     return text
+
+def sendNotification(chat_id):
+    print('УВЕДОМЛЕНИЕ!!!')
+    print(chat_id)
+    bot.send_message(chat_id, "Новая неделя - новые знания! Не забудь про подготовку.", parse_mode='html')
+    bot.send_photo(chat_id,
+                   open(str(pathlib.Path.cwd()) + "\\resources\\images\\notificationIMG.jpg", 'rb'))
+
+    t = threading.Timer(notificationPeriod, sendNotification, [chat_id])
+    t.start()
 
 # Запускаем бота
 while True:
